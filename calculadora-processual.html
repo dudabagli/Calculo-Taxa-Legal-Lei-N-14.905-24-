@@ -63,15 +63,9 @@
         <label for="valorOriginal">Valor Original (R$):</label>
         <input type="number" id="valorOriginal" step="0.01">
         
-        <label for="ipca">IPCA (%):</label>
-        <input type="number" id="ipca" step="0.01">
-        
-        <label for="taxa">Taxa Legal (%):</label>
-        <input type="number" id="taxa" step="0.01">
-        
         <button onclick="calcular()">Calcular</button>
         
-        <h3>Resultado: R$ <span id="resultado">0.00</span></h3>
+        <h3>Resultado:</h3>
         
         <div class="history">
             <h4>Histórico de Cálculos</h4>
@@ -92,21 +86,25 @@
 
     <script>
         function calcular() {
+            const ipcaValores = [1.0044, 1.0056, 1.0039, 1.0052, 1.0016, 1.0000];
+            const taxaValores = [1.006536, 1.006815, 1.00373, 1.001663, 1.005704, 1.008699];
+            const meses = ["Setembro", "Outubro", "Novembro", "Dezembro", "Janeiro", "Fevereiro"];
+
             let valorOriginal = parseFloat(document.getElementById('valorOriginal').value);
-            let ipca = parseFloat(document.getElementById('ipca').value) / 100;
-            let taxa = parseFloat(document.getElementById('taxa').value) / 100;
             
-            if (isNaN(valorOriginal) || isNaN(ipca) || isNaN(taxa)) {
-                alert("Por favor, preencha todos os campos corretamente.");
+            if (isNaN(valorOriginal)) {
+                alert("Por favor, preencha o campo corretamente.");
                 return;
             }
 
             let historicoDiv = document.getElementById('historico');
             historicoDiv.innerHTML = ""; // Limpa o histórico antes de recalcular
 
-            for (let mes = 1; mes <= 12; mes++) {
-                let valorAtualizado = valorOriginal * (1 + ipca) * (1 + taxa);
-                adicionarHistorico(mes, ipca, taxa, valorOriginal, valorAtualizado);
+            for (let i = 0; i < 6; i++) {
+                let ipca = ipcaValores[i];
+                let taxa = taxaValores[i];
+                let valorAtualizado = valorOriginal * ipca * taxa;
+                adicionarHistorico(meses[i], ipca, taxa, valorOriginal, valorAtualizado);
                 valorOriginal = valorAtualizado; // Atualiza o valor original para o próximo mês
             }
         }
