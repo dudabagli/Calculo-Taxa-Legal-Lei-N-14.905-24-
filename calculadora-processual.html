@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -35,6 +36,16 @@
         button:hover {
             background-color: #218838;
         }
+        .history {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .history-item {
+            background: #ddd;
+            padding: 5px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
         table {
             width: 100%;
             margin-top: 20px;
@@ -55,127 +66,53 @@
     <div class="container">
         <p class="observacao">Criada por Maria Eduarda Bagli, matrícula P0119844</p>
         <h2>Correção Pela Taxa Legal - Lei Nº 14.905/24</h2>
-        
         <label for="valorOriginal">Valor Original (R$):</label>
         <input type="number" id="valorOriginal" step="0.01">
-        
-        <h3>Índices</h3>
-        <table id="tabelaIndices">
-            <thead>
-                <tr>
-                    <th>Mês</th>
-                    <th>IPCA (%)</th>
-                    <th>Taxa Legal (%)</th>
-                    <th>Ação</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><input type="text" value="Setembro"></td>
-                    <td><input type="number" step="0.01" value="0.44"></td>
-                    <td><input type="number" step="0.01" value="0.65"></td>
-                    <td><button onclick="removerLinha(this)">Remover</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" value="Outubro"></td>
-                    <td><input type="number" step="0.01" value="0.56"></td>
-                    <td><input type="number" step="0.01" value="0.68"></td>
-                    <td><button onclick="removerLinha(this)">Remover</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" value="Novembro"></td>
-                    <td><input type="number" step="0.01" value="0.39"></td>
-                    <td><input type="number" step="0.01" value="0.37"></td>
-                    <td><button onclick="removerLinha(this)">Remover</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" value="Dezembro"></td>
-                    <td><input type="number" step="0.01" value="0.52"></td>
-                    <td><input type="number" step="0.01" value="0.17"></td>
-                    <td><button onclick="removerLinha(this)">Remover</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" value="Janeiro"></td>
-                    <td><input type="number" step="0.01" value="0.16"></td>
-                    <td><input type="number" step="0.01" value="0.57"></td>
-                    <td><button onclick="removerLinha(this)">Remover</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" value="Fevereiro"></td>
-                    <td><input type="number" step="0.01" value="0.00"></td>
-                    <td><input type="number" step="0.01" value="0.87"></td>
-                    <td><button onclick="removerLinha(this)">Remover</button></td>
-                </tr>
-            </tbody>
-        </table>
-        <button onclick="adicionarLinha()">Adicionar Mês</button>
         
         <button onclick="calcular()">Calcular</button>
         
         <h3>Resultado:</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Mês</th>
-                    <th>IPCA (%)</th>
-                    <th>Taxa Legal (%)</th>
-                    <th>Valor Original (R$)</th>
-                    <th>Valor Atualizado (R$)</th>
-                </tr>
-            </thead>
-            <tbody id="historico"></tbody>
-        </table>
-        <p class="observacao">Os índices referentes à Taxa Legal foram retirados da calculadora do Cidadão - Banco Central e os índices referentes ao IPCA foram retirados dos Indicadores Econômicos.</p>
+        
+        <div class="history">
+            <h4>Histórico de Cálculos</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mês</th>
+                        <th>IPCA (%)</th>
+                        <th>Taxa Legal (%)</th>
+                        <th>Valor Original (R$)</th>
+                        <th>Valor Atualizado (R$)</th>
+                    </tr>
+                </thead>
+                <tbody id="historico"></tbody>
+            </table>
+        </div>
+        <p class="observacao">Os índices referentes à Taxa Legal foram retirados da calculadora do Cidadão - Banco Central e os índices referentes ao IPCA foram retirados dos Indicadores Econômicos da planilha do TJMG</p>
     </div>
 
     <script>
-        function adicionarLinha() {
-            const tabela = document.getElementById('tabelaIndices').getElementsByTagName('tbody')[0];
-            const novaLinha = tabela.insertRow();
-            
-            const celulaMes = novaLinha.insertCell(0);
-            const celulaIPCA = novaLinha.insertCell(1);
-            const celulaTaxa = novaLinha.insertCell(2);
-            const celulaAcao = novaLinha.insertCell(3);
-            
-            celulaMes.innerHTML = '<input type="text">';
-            celulaIPCA.innerHTML = '<input type="number" step="0.01">';
-            celulaTaxa.innerHTML = '<input type="number" step="0.01">';
-            celulaAcao.innerHTML = '<button onclick="removerLinha(this)">Remover</button>';
-        }
-        
-        function removerLinha(botao) {
-            const linha = botao.parentNode.parentNode;
-            linha.parentNode.removeChild(linha);
-        }
-        
         function calcular() {
-            const valorOriginal = parseFloat(document.getElementById('valorOriginal').value);
+            const ipcaValores = [1.0044, 1.0056, 1.0039, 1.0052, 1.0016, 1.0000];
+            const taxaValores = [1.006536, 1.006815, 1.00373, 1.001663, 1.005704, 1.008699];
+            const meses = ["Setembro", "Outubro", "Novembro", "Dezembro", "Janeiro", "Fevereiro"];
+
+            let valorOriginal = parseFloat(document.getElementById('valorOriginal').value);
+            
             if (isNaN(valorOriginal)) {
                 alert("Por favor, preencha o campo corretamente.");
                 return;
             }
 
-            const tabela = document.getElementById('tabelaIndices').getElementsByTagName('tbody')[0];
-            const linhas = tabela.getElementsByTagName('tr');
             let historicoDiv = document.getElementById('historico');
-            historicoDiv.innerHTML = "";
+            historicoDiv.innerHTML = ""; // Limpa o histórico antes de recalcular
 
-            let valorAtual = valorOriginal;
-            
-            for (let i = 0; i < linhas.length; i++) {
-                const mes = linhas[i].cells[0].getElementsByTagName('input')[0].value;
-                const ipca = parseFloat(linhas[i].cells[1].getElementsByTagName('input')[0].value) / 100;
-                const taxa = parseFloat(linhas[i].cells[2].getElementsByTagName('input')[0].value) / 100;
-                
-                if (isNaN(ipca) || isNaN(taxa)) {
-                    alert("Por favor, preencha os índices corretamente.");
-                    return;
-                }
-                
-                let valorAtualizado = valorAtual * (1 + ipca) * (1 + taxa);
-                adicionarHistorico(mes, ipca, taxa, valorAtual, valorAtualizado);
-                valorAtual = valorAtualizado; // Atualiza o valor original para o próximo mês
+            for (let i = 0; i < 6; i++) {
+                let ipca = ipcaValores[i];
+                let taxa = taxaValores[i];
+                let valorAtualizado = valorOriginal * ipca * taxa;
+                adicionarHistorico(meses[i], ipca, taxa, valorOriginal, valorAtualizado);
+                valorOriginal = valorAtualizado; // Atualiza o valor original para o próximo mês
             }
         }
 
