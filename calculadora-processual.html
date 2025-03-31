@@ -59,6 +59,9 @@
             font-size: 8px;
             margin-top: 10px;
         }
+        .small-input {
+            width: 60px;
+        }
     </style>
 </head>
 <body>
@@ -84,18 +87,58 @@
                         <th>Valor Atualizado (R$)</th>
                     </tr>
                 </thead>
-                <tbody id="historico"></tbody>
+                <tbody id="historico">
+                    <tr>
+                        <td><input type="text" value="Setembro"></td>
+                        <td><input type="number" class="small-input" value="1.0044"></td>
+                        <td><input type="number" class="small-input" value="1.006536"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" value="Outubro"></td>
+                        <td><input type="number" class="small-input" value="1.0056"></td>
+                        <td><input type="number" class="small-input" value="1.006815"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" value="Novembro"></td>
+                        <td><input type="number" class="small-input" value="1.0039"></td>
+                        <td><input type="number" class="small-input" value="1.00373"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" value="Dezembro"></td>
+                        <td><input type="number" class="small-input" value="1.0052"></td>
+                        <td><input type="number" class="small-input" value="1.001663"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" value="Janeiro"></td>
+                        <td><input type="number" class="small-input" value="1.0016"></td>
+                        <td><input type="number" class="small-input" value="1.005704"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" value="Fevereiro"></td>
+                        <td><input type="number" class="small-input" value="1.0000"></td>
+                        <td><input type="number" class="small-input" value="1.008699"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
             </table>
+            <button onclick="adicionarMes()">Adicionar Mês</button>
         </div>
-        <p class="observacao">Os índices referentes à Taxa Legal foram retirados da calculadora do Cidadão - Banco Central e os índices referentes ao IPCA foram retirados dos Indicadores Econômicos da planilha do TJMG</p>
+        <p class="observacao">Os índices referentes à Taxa Legal foram retirados da calculadora do Cidadão - Banco Central e os índices referentes ao IPCA foram retirados dos Indicadores Econômicos.</p>
     </div>
 
     <script>
         function calcular() {
-            const ipcaValores = [1.0044, 1.0056, 1.0039, 1.0052, 1.0016, 1.0000];
-            const taxaValores = [1.006536, 1.006815, 1.00373, 1.001663, 1.005704, 1.008699];
-            const meses = ["Setembro", "Outubro", "Novembro", "Dezembro", "Janeiro", "Fevereiro"];
-
             let valorOriginal = parseFloat(document.getElementById('valorOriginal').value);
             
             if (isNaN(valorOriginal)) {
@@ -104,13 +147,16 @@
             }
 
             let historicoDiv = document.getElementById('historico');
+            let rows = historicoDiv.getElementsByTagName('tr');
             historicoDiv.innerHTML = ""; // Limpa o histórico antes de recalcular
 
-            for (let i = 0; i < 6; i++) {
-                let ipca = ipcaValores[i];
-                let taxa = taxaValores[i];
+            for (let i = 0; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName('td');
+                let mes = cells[0].getElementsByTagName('input')[0].value;
+                let ipca = parseFloat(cells[1].getElementsByTagName('input')[0].value);
+                let taxa = parseFloat(cells[2].getElementsByTagName('input')[0].value);
                 let valorAtualizado = valorOriginal * ipca * taxa;
-                adicionarHistorico(meses[i], ipca, taxa, valorOriginal, valorAtualizado);
+                adicionarHistorico(mes, ipca, taxa, valorOriginal, valorAtualizado);
                 valorOriginal = valorAtualizado; // Atualiza o valor original para o próximo mês
             }
         }
@@ -124,6 +170,19 @@
                 <td>${(taxa * 100).toFixed(2)}</td>
                 <td>R$${valorOriginal.toFixed(2)}</td>
                 <td>R$${valorAtualizado.toFixed(2)}</td>
+            `;
+            historicoDiv.appendChild(row);
+        }
+
+        function adicionarMes() {
+            let historicoDiv = document.getElementById('historico');
+            let row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="text" value=""></td>
+                <td><input type="number" class="small-input" value=""></td>
+                <td><input type="number" class="small-input" value=""></td>
+                <td></td>
+                <td></td>
             `;
             historicoDiv.appendChild(row);
         }
