@@ -1,132 +1,74 @@
 
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cálculo Processual</title>
+    <title>Calculadora Processual</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
-            margin: 50px; 
-            background-color: #f4f4f4;
-        }
-        .container { 
-            max-width: 600px; 
-            margin: auto; 
-            padding: 20px; 
-            background: white; 
-            border-radius: 10px; 
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        input, button { 
-            margin: 10px; 
-            padding: 10px; 
-            width: calc(100% - 20px); 
-            border: 1px solid #ccc; 
-            border-radius: 5px;
-        }
-        button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        .history {
-            margin-top: 20px;
-            text-align: left;
-        }
-        .history-item {
-            background: #ddd;
-            padding: 5px;
-            margin: 5px 0;
-            border-radius: 5px;
-        }
         table {
             width: 100%;
-            margin-top: 20px;
             border-collapse: collapse;
         }
         th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: center;
-        }
-        .observacao {
-            font-size: 8px;
-            margin-top: 10px;
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <p class="observacao">Criada por Maria Eduarda Bagli, matrícula P0119844</p>
-        <h2>Correção Pela Taxa Legal - Lei Nº 14.905/24</h2>
-        <label for="valorOriginal">Valor Original (R$):</label>
-        <input type="number" id="valorOriginal" step="0.01">
-        
-        <button onclick="calcular()">Calcular</button>
-        
-        <h3>Resultado:</h3>
-        
-        <div class="history">
-            <h4>Histórico de Cálculos</h4>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mês</th>
-                        <th>IPCA (%)</th>
-                        <th>Taxa Legal (%)</th>
-                        <th>Valor Original (R$)</th>
-                        <th>Valor Atualizado (R$)</th>
-                    </tr>
-                </thead>
-                <tbody id="historico"></tbody>
-            </table>
-        </div>
-        <p class="observacao">Os índices referentes à Taxa Legal foram retirados da calculadora do Cidadão - Banco Central e os índices referentes ao IPCA foram retirados dos Indicadores Econômicos da planilha do TJMG</p>
-    </div>
+    <h1>Calculadora Processual</h1>
+    <form id="calcForm">
+        <label for="taxaLegal">Taxa Legal (%):</label>
+        <input type="number" id="taxaLegal" name="taxaLegal" value="10" step="0.01">
+        <br>
+        <label for="ipca">IPCA (%):</label>
+        <input type="number" id="ipca" name="ipca" value="5" step="0.01">
+        <br><br>
+        <input type="button" value="Calcular" onclick="calcular()">
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Mês</th>
+                <th>Valor Inicial</th>
+                <th>Taxa Legal</th>
+                <th>IPCA</th>
+                <th>Valor Final</th>
+            </tr>
+        </thead>
+        <tbody id="resultTable">
+            <!-- Resultados serão inseridos aqui -->
+        </tbody>
+    </table>
 
     <script>
         function calcular() {
-            const ipcaValores = [1.0044, 1.0056, 1.0039, 1.0052, 1.0016, 1.0000];
-            const taxaValores = [1.006536, 1.006815, 1.00373, 1.001663, 1.005704, 1.008699];
-            const meses = ["Setembro", "Outubro", "Novembro", "Dezembro", "Janeiro", "Fevereiro"];
+            const taxaLegal = parseFloat(document.getElementById('taxaLegal').value) / 100;
+            const ipca = parseFloat(document.getElementById('ipca').value) / 100;
 
-            let valorOriginal = parseFloat(document.getElementById('valorOriginal').value);
-            
-            if (isNaN(valorOriginal)) {
-                alert("Por favor, preencha o campo corretamente.");
-                return;
-            }
+            const valoresIniciais = [
+                { mes: 'Janeiro', valor: 1000 },
+                { mes: 'Fevereiro', valor: 1100 },
+                { mes: 'Março', valor: 1200 },
+                // Adicione mais meses e valores iniciais conforme necessário
+            ];
 
-            let historicoDiv = document.getElementById('historico');
-            historicoDiv.innerHTML = ""; // Limpa o histórico antes de recalcular
+            const tbody = document.getElementById('resultTable');
+            tbody.innerHTML = ''; // Limpa tabela
 
-            for (let i = 0; i < 6; i++) {
-                let ipca = ipcaValores[i];
-                let taxa = taxaValores[i];
-                let valorAtualizado = valorOriginal * ipca * taxa;
-                adicionarHistorico(meses[i], ipca, taxa, valorOriginal, valorAtualizado);
-                valorOriginal = valorAtualizado; // Atualiza o valor original para o próximo mês
-            }
-        }
-
-        function adicionarHistorico(mes, ipca, taxa, valorOriginal, valorAtualizado) {
-            let historicoDiv = document.getElementById('historico');
-            let row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${mes}</td>
-                <td>${(ipca * 100).toFixed(2)}</td>
-                <td>${(taxa * 100).toFixed(2)}</td>
-                <td>R$${valorOriginal.toFixed(2)}</td>
-                <td>R$${valorAtualizado.toFixed(2)}</td>
-            `;
-            historicoDiv.appendChild(row);
+            valoresIniciais.forEach(item => {
+                const valorFinal = item.valor * (1 + taxaLegal) * (1 + ipca);
+                const row = `<tr>
+                    <td>${item.mes}</td>
+                    <td>${item.valor.toFixed(2)}</td>
+                    <td>${(taxaLegal * 100).toFixed(2)}%</td>
+                    <td>${(ipca * 100).toFixed(2)}%</td>
+                    <td>${valorFinal.toFixed(2)}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
         }
     </script>
 </body>
