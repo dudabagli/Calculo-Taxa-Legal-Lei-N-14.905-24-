@@ -68,7 +68,7 @@
     <div class="container">
         <p class="observacao">Criada por Maria Eduarda Bagli, matrícula P0119844</p>
         <h2>Correção Pela Taxa Legal - Lei Nº 14.905/24</h2>
-        <label for="valorOriginal">Valor Original (R$):</label>
+        <label for="valorOriginal">Valor de Origem (R$):</label>
         <input type="number" id="valorOriginal" step="0.01">
         
         <button onclick="calcular()">Calcular</button>
@@ -83,51 +83,44 @@
                         <th>Mês</th>
                         <th>IPCA (%)</th>
                         <th>Taxa Legal (%)</th>
-                        <th>Valor Original (R$)</th>
                         <th>Valor Atualizado (R$)</th>
                     </tr>
                 </thead>
                 <tbody id="historico">
                     <tr>
                         <td><input type="text" value="Setembro"></td>
-                        <td><input type="number" class="small-input" value="1.0044"></td>
-                        <td><input type="number" class="small-input" value="1.006536"></td>
-                        <td></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.0044"></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.006536"></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td><input type="text" value="Outubro"></td>
-                        <td><input type="number" class="small-input" value="1.0056"></td>
-                        <td><input type="number" class="small-input" value="1.006815"></td>
-                        <td></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.0056"></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.006815"></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td><input type="text" value="Novembro"></td>
-                        <td><input type="number" class="small-input" value="1.0039"></td>
-                        <td><input type="number" class="small-input" value="1.00373"></td>
-                        <td></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.0039"></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.00373"></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td><input type="text" value="Dezembro"></td>
-                        <td><input type="number" class="small-input" value="1.0052"></td>
-                        <td><input type="number" class="small-input" value="1.001663"></td>
-                        <td></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.0052"></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.001663"></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td><input type="text" value="Janeiro"></td>
-                        <td><input type="number" class="small-input" value="1.0016"></td>
-                        <td><input type="number" class="small-input" value="1.005704"></td>
-                        <td></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.0016"></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.005704"></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td><input type="text" value="Fevereiro"></td>
-                        <td><input type="number" class="small-input" value="1.0000"></td>
-                        <td><input type="number" class="small-input" value="1.008699"></td>
-                        <td></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.0000"></td>
+                        <td><input type="number" class="small-input" step="0.0001" value="1.008699"></td>
                         <td></td>
                     </tr>
                 </tbody>
@@ -148,30 +141,16 @@
 
             let historicoDiv = document.getElementById('historico');
             let rows = historicoDiv.getElementsByTagName('tr');
-            historicoDiv.innerHTML = ""; // Limpa o histórico antes de recalcular
+            let valorAtualizado = valorOriginal;
 
             for (let i = 0; i < rows.length; i++) {
                 let cells = rows[i].getElementsByTagName('td');
                 let mes = cells[0].getElementsByTagName('input')[0].value;
                 let ipca = parseFloat(cells[1].getElementsByTagName('input')[0].value);
                 let taxa = parseFloat(cells[2].getElementsByTagName('input')[0].value);
-                let valorAtualizado = valorOriginal * ipca * taxa;
-                adicionarHistorico(mes, ipca, taxa, valorOriginal, valorAtualizado);
-                valorOriginal = valorAtualizado; // Atualiza o valor original para o próximo mês
+                valorAtualizado *= ipca * taxa;
+                cells[3].innerText = `R$${valorAtualizado.toFixed(2)}`;
             }
-        }
-
-        function adicionarHistorico(mes, ipca, taxa, valorOriginal, valorAtualizado) {
-            let historicoDiv = document.getElementById('historico');
-            let row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${mes}</td>
-                <td>${(ipca * 100).toFixed(2)}</td>
-                <td>${(taxa * 100).toFixed(2)}</td>
-                <td>R$${valorOriginal.toFixed(2)}</td>
-                <td>R$${valorAtualizado.toFixed(2)}</td>
-            `;
-            historicoDiv.appendChild(row);
         }
 
         function adicionarMes() {
@@ -179,9 +158,8 @@
             let row = document.createElement('tr');
             row.innerHTML = `
                 <td><input type="text" value=""></td>
-                <td><input type="number" class="small-input" value=""></td>
-                <td><input type="number" class="small-input" value=""></td>
-                <td></td>
+                <td><input type="number" class="small-input" step="0.0001" value=""></td>
+                <td><input type="number" class="small-input" step="0.0001" value=""></td>
                 <td></td>
             `;
             historicoDiv.appendChild(row);
