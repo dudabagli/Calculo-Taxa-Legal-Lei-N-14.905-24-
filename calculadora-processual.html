@@ -69,12 +69,10 @@
         <h2>Correção Pela Taxa Legal - Lei Nº 14.905/24</h2>
         <label for="valorOriginal">Valor de Origem (R$):</label>
         <input type="number" id="valorOriginal" step="0.01">
-
-        <label for="taxaLegal">Taxa Legal (%):</label>
-        <input type="number" id="taxaLegal" step="0.0001" value="1.006536">
-
-        <label for="ipca">IPCA (%):</label>
-        <input type="number" id="ipca" step="0.0001" value="1.0044">
+        
+        <button onclick="calcular()">Calcular</button>
+        
+        <h3>Resultado:</h3>
         
         <div class="history">
             <h4>Histórico de Cálculos</h4>
@@ -128,20 +126,15 @@
             </table>
             <button onclick="adicionarMes()">Adicionar Mês</button>
         </div>
-        <button onclick="calcular()">Calcular</button>
-        <h3>Resultado:</h3>
-        <p id="resultado"></p>
         <p class="observacao">Os índices referentes à Taxa Legal foram retirados da calculadora do Cidadão - Banco Central e os índices referentes ao IPCA foram retirados dos Indicadores Econômicos.</p>
     </div>
 
     <script>
         function calcular() {
             let valorOriginal = parseFloat(document.getElementById('valorOriginal').value);
-            let taxaLegal = parseFloat(document.getElementById('taxaLegal').value);
-            let ipca = parseFloat(document.getElementById('ipca').value);
-
-            if (isNaN(valorOriginal) || isNaN(taxaLegal) || isNaN(ipca)) {
-                alert("Por favor, preencha todos os campos corretamente.");
+            
+            if (isNaN(valorOriginal)) {
+                alert("Por favor, preencha o campo corretamente.");
                 return;
             }
 
@@ -152,13 +145,11 @@
             for (let i = 0; i < rows.length; i++) {
                 let cells = rows[i].getElementsByTagName('td');
                 let mes = cells[0].getElementsByTagName('input')[0].value;
-                let ipcaMes = parseFloat(cells[1].getElementsByTagName('input')[0].value);
-                let taxaMes = parseFloat(cells[2].getElementsByTagName('input')[0].value);
-                valorAtualizado *= ipcaMes * taxaMes;
+                let ipca = parseFloat(cells[1].getElementsByTagName('input')[0].value);
+                let taxa = parseFloat(cells[2].getElementsByTagName('input')[0].value);
+                valorAtualizado *= ipca * taxa;
                 cells[3].innerText = `R$${valorAtualizado.toFixed(2)}`;
             }
-
-            document.getElementById('resultado').innerText = `Valor Atualizado: R$${valorAtualizado.toFixed(2)}`;
         }
 
         function adicionarMes() {
